@@ -14,7 +14,7 @@ import * as Permissions from "expo-permissions";
 import FormData from "form-data";
 
 export default function App() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(null);
   const [image, setImage] = useState(null);
   const form = new FormData();
 
@@ -49,19 +49,20 @@ export default function App() {
         { text: "Okay" }
       ]);
     } else {
-      form.append("uri", image);
-      form.append("name", image.split("/").pop());
-      form.append("type", "image");
-      console.log("FORM", form);
-      const response = await axios({
+      const imgObj = {
+        uri: image,
+        name: image.split("/").pop(),
+        type: "image"
+      };
+      form.append("image", imgObj);
+      axios({
         method: "post",
-        url: "https://b1b4146d.ngrok.io/image-upload",
+        url: "https://0882c043.ngrok.io/image-upload",
         data: form,
         headers: {
           "content-type": `multipart/form-data`
         }
       });
-      // console.log(response);
     }
     setImage(null);
   };
@@ -75,8 +76,7 @@ export default function App() {
       aspect: [16, 9],
       quality: 0.5
     });
-    setImage(img.uri.replace("file://", ""));
-    console.log(img);
+    setImage(img.uri);
   };
 
   return (
@@ -88,7 +88,11 @@ export default function App() {
           onChangeText={text => setText(text)}
           style={styles.textInput}
         />
-        <Button title="Submit" onPress={sendTextRequestHandler} />
+        <Button
+          title="Submit"
+          onPress={sendTextRequestHandler}
+          disabled={!text ? true : false}
+        />
       </View>
       <View style={styles.bottom}>
         <View style={styles.imagePreview}>
@@ -99,7 +103,11 @@ export default function App() {
           )}
         </View>
         <Button title="Take Image" onPress={takeImageHandler} />
-        <Button title="Submit" onPress={sendImgRequestHandler} />
+        <Button
+          title="Submit"
+          onPress={sendImgRequestHandler}
+          disabled={!image ? true : false}
+        />
       </View>
     </View>
   );
