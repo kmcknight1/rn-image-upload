@@ -37,7 +37,7 @@ export default function App() {
   const sendTextRequestHandler = () => {
     console.log("text", text);
     axios
-      .post("https://b1b4146d.ngrok.io/text-upload", { text })
+      .post("https://85c6bc09.ngrok.io/text-upload", { text })
       .then(res => console.log(res.data))
       .catch(err => console.log(err));
     setText("");
@@ -49,19 +49,25 @@ export default function App() {
         { text: "Okay" }
       ]);
     } else {
-      form.append("uri", image);
-      form.append("name", image.split("/").pop());
-      form.append("type", "image");
+      const imageData = {
+        uri: image,
+        type: "image/jpeg",
+        name: image.split("/").pop()
+      } 
+      form.append("image", imageData);
+      // form.append("uri", image);
+      // form.append("name", image.split("/").pop());
+      // form.append("type", "image");
       console.log("FORM", form);
       const response = await axios({
         method: "post",
-        url: "https://b1b4146d.ngrok.io/image-upload",
+        url: "https://85c6bc09.ngrok.io/image-upload",
         data: form,
         headers: {
           "content-type": `multipart/form-data`
         }
       });
-      // console.log(response);
+      console.log(response);
     }
     setImage(null);
   };
@@ -75,8 +81,8 @@ export default function App() {
       aspect: [16, 9],
       quality: 0.5
     });
-    setImage(img.uri.replace("file://", ""));
-    console.log(img);
+    // setImage(img.uri.replace("file://", ""));
+    setImage(img.uri);
   };
 
   return (
